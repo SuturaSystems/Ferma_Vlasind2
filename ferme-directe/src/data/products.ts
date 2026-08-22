@@ -218,7 +218,7 @@ export const BOX_SUBSCRIPTIONS: BoxSubscription[] = [
       '6 Ouă de Țară',
     ],
     image: '/images/boxes/box-mica.jpg',
-    stripePriceId: undefined,
+    stripePriceId: 'price_1U764uHqn1Y1AAgRSkx7WGnO', // Coș Mic 85 RON
   },
   {
     id: 'box-familie',
@@ -239,7 +239,7 @@ export const BOX_SUBSCRIPTIONS: BoxSubscription[] = [
     ],
     image: '/images/boxes/box-familie.jpg',
     popular: true,
-    stripePriceId: undefined,
+    stripePriceId: 'price_1U764vHqn1Y1AAgRR7WpjtrJ', // Coș Familie 150 RON
   },
   {
     id: 'box-premium',
@@ -260,7 +260,7 @@ export const BOX_SUBSCRIPTIONS: BoxSubscription[] = [
       'Livrare prioritară inclusă',
     ],
     image: '/images/boxes/box-premium.jpg',
-    stripePriceId: undefined,
+    stripePriceId: 'price_1U764wHqn1Y1AAgRCY1VSUq2', // Coș Premium 250 RON
   },
 ];
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Check, ArrowRight } from 'lucide-react';
+import { Check, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { BOX_SUBSCRIPTIONS } from '@/data/products';
 import { useStore, formatPrice } from '@/store';
@@ -103,6 +103,67 @@ export default function PaniersPage() {
 function BoxCard({ box, lang, index }: { box: BoxSubscription; lang: 'ro' | 'en'; index: number }) {
   const l = lang;
   const emoji = ['🧺', '🧺🧺', '🥇'][index] ?? '🧺';
+  const [loading, setLoading] = React.useState(false);
+
+  const handleSubscribe = async () => {
+    if (!box.stripePriceId) {
+      alert(
+        l === 'ro'
+          ? 'Abonamentele sunt în curs de configurare. Contactați-ne la contact@ferma.ro'
+          : 'Subscriptions are being configured. Contact us at contact@ferma.ro'
+      );
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Utiliser le price ID Stripe pour créer une session de paiement one-time
+      // (les abonnements récurrents nécessitent mode: 'subscription' dans checkout)
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: [{
+            product: {
+              id: box.id,
+              name: box.name,
+              description: box.description,
+              price: box.price,
+              unit: 'cutie',
+              slug: box.id,
+              origin: 'Ferma Noastră, România',
+              images: [],
+              stock: 99,
+              category: 'panier',
+              season: [],
+              badges: [],
+              featured: false,
+              available: true,
+              story: { ro: '', en: '' },
+              harvestDate: undefined,
+            },
+            quantity: 1,
+          }],
+          deliveryFee: 0, // Livraison incluse dans le prix du coș
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error(data.error ?? 'Erreur inconnue');
+      }
+    } catch (err) {
+      console.error('[Ferma/Subscribe]', err);
+      alert(
+        l === 'ro'
+          ? 'Eroare la inițializarea plății. Încercați din nou sau contactați-ne.'
+          : 'Payment initialization error. Please try again or contact us.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -194,10 +255,15 @@ function BoxCard({ box, lang, index }: { box: BoxSubscription; lang: 'ro' | 'en'
           <button
             id={`subscribe-${box.id}`}
             className={`btn ${box.popular ? 'btn-primary' : 'btn-secondary'} btn-lg`}
-            style={{ width: '100%', justifyContent: 'center' }}
-            onClick={() => alert(l === 'ro' ? 'Abonamentele vor fi disponibile după configurarea Stripe. Contactați-ne la contact@ferma.ro' : 'Subscriptions will be available after Stripe configuration. Contact us at contact@ferma.ro')}
+            style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.8 : 1 }}
+            onClick={handleSubscribe}
+            disabled={loading}
           >
-            {l === 'ro' ? 'Abonează-te Acum' : 'Subscribe Now'} <ArrowRight size={16} />
+            {loading ? (
+              <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> {l === 'ro' ? 'Se încarcă...' : 'Loading...'}</>
+            ) : (
+              <>{l === 'ro' ? 'Abonează-te Acum' : 'Subscribe Now'} <ArrowRight size={16} /></>
+            )}
           </button>
         </div>
       </div>
