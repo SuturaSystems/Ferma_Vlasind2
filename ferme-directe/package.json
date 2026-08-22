@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "stripe:setup": "node scripts/stripe-setup.mjs",
+    "stripe:webhooks": "stripe listen --forward-to localhost:3000/api/stripe/webhooks"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",

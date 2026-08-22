@@ -4,78 +4,85 @@ import type { CartItem } from '@/types';
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // POST /api/stripe/checkout
-// Crée une session Stripe Checkout
+// Crée une Stripe Checkout Session (paiement one-time)
+// Patterns: stripe-node skill + saas-starter
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 export async function POST(req: NextRequest) {
-  // Vérification configuration Stripe
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const { isStripeConfigured, getStripe, STRIPE_CONFIG } = await import('@/lib/stripe');
+
+  // ── Vérification configuration ──
+  if (!isStripeConfigured()) {
     return NextResponse.json(
       {
-        error: 'Stripe non configuré',
-        message: 'Ajoutez STRIPE_SECRET_KEY dans votre .env.local',
-        setup: {
-          required: [
-            'STRIPE_SECRET_KEY=sk_test_...',
-            'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...',
-            'STRIPE_WEBHOOK_SECRET=whsec_...',
-            'NEXT_PUBLIC_BASE_URL=http://localhost:3000',
-          ],
+        error: 'stripe_not_configured',
+        message: "Stripe n'est pas encore configuré.",
+        instructions: {
+          step1: 'Copiez .env.example → .env.local',
+          step2: 'Ajoutez STRIPE_SECRET_KEY=sk_test_...',
+          step3: 'Ajoutez NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...',
+          step4: 'Ajoutez STRIPE_WEBHOOK_SECRET=whsec_...',
+          docs: 'https://dashboard.stripe.com/apikeys',
         },
       },
       { status: 503 }
     );
   }
 
+  // ── Parsing du body ──
+  let body: { items: CartItem[]; customerEmail?: string; deliveryFee: number };
   try {
-    const { getStripe, STRIPE_CONFIG } = await import('@/lib/stripe');
-    const stripe = getStripe();
-    const body = await req.json() as {
-      items: CartItem[];
-      customerEmail?: string;
-      deliveryFee: number;
-    };
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Corps de requête invalide' }, { status: 400 });
+  }
 
-    const { items, customerEmail, deliveryFee } = body;
+  const { items, customerEmail, deliveryFee } = body;
 
-    if (!items || items.length === 0) {
-      return NextResponse.json({ error: 'Panier vide' }, { status: 400 });
-    }
+  if (!items || items.length === 0) {
+    return NextResponse.json({ error: 'Le panier est vide' }, { status: 400 });
+  }
 
-    // Construire les line items Stripe
-    const lineItems = items.map((item) => ({
+  // ── Construction des line items ──
+  const lineItems: import('stripe').Stripe.Checkout.SessionCreateParams.LineItem[] = items.map(
+    (item) => ({
       price_data: {
         currency: STRIPE_CONFIG.currency,
         product_data: {
           name: item.product.name.ro,
-          description: item.product.description.ro.substring(0, 500),
+          description: `${item.product.description.ro.substring(0, 200)} | Origine: ${item.product.origin ?? 'Ferma Noastră'}`,
+          images: [],
           metadata: {
             productId: item.product.id,
+            slug: item.product.slug,
             unit: item.product.unit,
           },
         },
-        unit_amount: item.product.price, // déjà en centimes
+        unit_amount: item.product.price,
       },
       quantity: item.quantity,
-    }));
+    })
+  );
 
-    // Ajouter frais de livraison si nécessaire
-    if (deliveryFee > 0) {
-      lineItems.push({
-        price_data: {
-          currency: STRIPE_CONFIG.currency,
-          product_data: {
-            name: 'Livrare',
-            description: 'Taxă de livrare la domiciliu',
-            metadata: { productId: 'delivery', unit: 'fixed' },
-          },
-          unit_amount: deliveryFee,
+  // ── Frais de livraison ──
+  if (deliveryFee > 0) {
+    lineItems.push({
+      price_data: {
+        currency: STRIPE_CONFIG.currency,
+        product_data: {
+          name: 'Taxă de livrare',
+          description: 'Livrare la domiciliu — zona locală',
+          metadata: { type: 'delivery' },
         },
-        quantity: 1,
-      });
-    }
+        unit_amount: deliveryFee,
+      },
+      quantity: 1,
+    });
+  }
 
-    // Créer la session checkout
+  // ── Création session Stripe ──
+  try {
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
@@ -85,21 +92,41 @@ export async function POST(req: NextRequest) {
       customer_email: customerEmail,
       locale: 'ro',
       shipping_address_collection: {
-        allowed_countries: ['RO'],
+        allowed_countries: STRIPE_CONFIG.allowedCountries,
       },
       phone_number_collection: { enabled: true },
+      custom_text: {
+        submit: {
+          message:
+            'Produsele vor fi livrate proaspete, culese în dimineața livrării.',
+        },
+      },
       metadata: {
         source: 'ferma-directe',
-        itemCount: items.length.toString(),
+        itemCount: String(items.length),
+        totalItems: String(items.reduce((s, i) => s + i.quantity, 0)),
       },
       payment_intent_data: {
-        description: `Comandă Ferma — ${items.length} produs(e)`,
+        description: `Ferma — ${items.length} produs(e) de fermă`,
+        metadata: { source: 'ferma-directe' },
       },
+      // Codes promo (décommentez si vous créez des coupons dans Stripe Dashboard)
+      // allow_promotion_codes: true,
     });
 
     return NextResponse.json({ url: session.url, sessionId: session.id });
-  } catch (error) {
-    console.error('[Stripe Checkout Error]', error);
+  } catch (err) {
+    const stripeError = err as { type?: string; message?: string };
+    console.error('[Ferma/Stripe Checkout Error]', stripeError);
+
+    // Erreurs Stripe typées (pattern stripe-node)
+    if (stripeError.type === 'StripeAuthenticationError') {
+      return NextResponse.json(
+        { error: 'Clé Stripe invalide. Vérifiez STRIPE_SECRET_KEY dans .env.local' },
+        { status: 401 }
+      );
+    }
+
     return NextResponse.json(
       { error: 'Eroare la inițializarea plății. Vă rugăm încercați din nou.' },
       { status: 500 }
