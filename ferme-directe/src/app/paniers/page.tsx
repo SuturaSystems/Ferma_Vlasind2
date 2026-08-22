@@ -1,9 +1,9 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Check, ArrowRight, Loader2 } from 'lucide-react';
-import Link from 'next/link';
+import { Check, ArrowRight, Loader2, Sparkles, Shield, RotateCcw, Truck } from 'lucide-react';
 import { BOX_SUBSCRIPTIONS } from '@/data/products';
 import { useStore, formatPrice } from '@/store';
 import type { BoxSubscription } from '@/types';
@@ -13,138 +13,190 @@ export default function PaniersPage() {
   const l = language;
 
   return (
-    <>
-      {/* Hero */}
-      <section style={{
-        paddingTop: '8rem', paddingBottom: '3rem',
-        background: 'linear-gradient(180deg, var(--color-cream) 0%, var(--color-offwhite) 100%)',
-        textAlign: 'center',
-      }}>
-        <div className="container-site">
+    <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', paddingBottom: '6rem' }}>
+      {/* ── Page Header ── */}
+      <section
+        style={{
+          padding: 'clamp(3.5rem, 6vw, 5rem) 0 3rem',
+          backgroundColor: '#FFFFFF',
+          borderBottom: '1px solid var(--color-border)',
+          textAlign: 'center',
+        }}
+      >
+        <div className="container-narrow">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span style={{
-              display: 'inline-block',
-              fontSize: '0.75rem', fontWeight: 600,
-              color: 'var(--color-terracotta)',
-              textTransform: 'uppercase', letterSpacing: '0.1em',
-              marginBottom: '1rem',
-            }}>
-              🧺 {l === 'ro' ? 'Abonamente Săptămânale' : 'Weekly Subscriptions'}
+            <span
+              style={{
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: 'var(--color-terracotta)',
+                display: 'block',
+                marginBottom: '0.75rem',
+              }}
+            >
+              {l === 'ro' ? 'Abonamente de Recoltă Proaspătă' : 'Fresh Harvest Subscriptions'}
             </span>
-            <h1 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-              fontWeight: 700,
-              color: 'var(--color-brown)',
-              marginBottom: '1rem',
-            }}>
-              {l === 'ro' ? 'Coșul Fermei,\nSăptămânal la Tine' : 'The Farm Basket,\nWeekly at Your Door'}
-            </h1>
-            <p style={{
-              fontSize: '1.0625rem',
-              color: 'var(--color-text-muted)',
-              maxWidth: '52ch', margin: '0 auto',
-              lineHeight: 1.65,
-            }}>
+
+            <h1
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 'clamp(2.25rem, 5vw, 3.75rem)',
+                fontWeight: 600,
+                color: 'var(--color-ink)',
+                letterSpacing: '-0.02em',
+                lineHeight: 1.15,
+                marginBottom: '1.25rem',
+              }}
+            >
               {l === 'ro'
-                ? 'Alege coșul potrivit și primești produse proaspete de la ferma noastră în fiecare săptămână. Anulare oricând.'
-                : 'Choose the right basket and receive fresh products from our farm every week. Cancel anytime.'}
+                ? 'Coșul Săptămânal al Fermei,\nDirect la Ușa Ta'
+                : 'The Weekly Farm Basket,\nDelivered to Your Door'}
+            </h1>
+
+            <p
+              style={{
+                fontSize: '1.125rem',
+                color: 'var(--color-ink-muted)',
+                maxWidth: '56ch',
+                margin: '0 auto',
+                lineHeight: 1.65,
+              }}
+            >
+              {l === 'ro'
+                ? 'Alege formula potrivită familiei tale și primești în fiecare miercuri legume, fructe de sezon, ouă și miere culese în zori. Fără contracte rigide — anulezi oricând.'
+                : 'Choose the plan tailored to your household and receive dawn-picked seasonal vegetables, greens, pasture eggs and raw honey every Wednesday. Cancel anytime.'}
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* Boxes Grid */}
-      <section style={{ padding: '3rem 0 6rem', background: 'var(--color-offwhite)' }}>
+      {/* ── 3 Subscription Tiers ── */}
+      <section style={{ padding: 'clamp(3rem, 6vw, 4.5rem) 0' }}>
         <div className="container-site">
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-            gap: '2rem',
-            alignItems: 'start',
-          }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: '2rem',
+              alignItems: 'stretch',
+            }}
+          >
             {BOX_SUBSCRIPTIONS.map((box, i) => (
               <BoxCard key={box.id} box={box} lang={l} index={i} />
             ))}
           </div>
 
-          {/* Info strip */}
-          <div style={{
-            marginTop: '3rem', padding: '2rem',
-            background: 'var(--color-cream)',
-            borderRadius: 'var(--radius-xl)',
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '1.5rem',
-          }}>
+          {/* ── Value Guarantees Strip ── */}
+          <div
+            style={{
+              marginTop: '4rem',
+              padding: '2.5rem 2rem',
+              backgroundColor: '#FFFFFF',
+              borderRadius: 'var(--radius-xl)',
+              border: '1px solid var(--color-border)',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '2rem',
+            }}
+          >
             {[
-              { emoji: '📅', title: l === 'ro' ? 'Livrare săptămânală' : 'Weekly delivery', desc: l === 'ro' ? 'Miercuri sau Joi, după alegere' : 'Wednesday or Thursday, by choice' },
-              { emoji: '❌', title: l === 'ro' ? 'Anulare oricând' : 'Cancel anytime', desc: l === 'ro' ? 'Fără angajamente pe termen lung' : 'No long-term commitments' },
-              { emoji: '🔄', title: l === 'ro' ? 'Modificare ușoară' : 'Easy changes', desc: l === 'ro' ? 'Pauzează sau schimbă coșul' : 'Pause or switch basket' },
-              { emoji: '📞', title: l === 'ro' ? 'Suport dedicat' : 'Dedicated support', desc: l === 'ro' ? 'Suntem mereu disponibili' : 'We\'re always available' },
-            ].map(({ emoji, title, desc }) => (
-              <div key={title} style={{ textAlign: 'center' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{emoji}</div>
-                <p style={{ fontWeight: 600, color: 'var(--color-brown)', marginBottom: '0.25rem', fontSize: '0.9375rem' }}>{title}</p>
-                <p style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>{desc}</p>
+              {
+                icon: <Truck size={20} color="var(--color-terracotta)" />,
+                title: l === 'ro' ? 'Livrare Inclusă' : 'Free Delivery Included',
+                desc: l === 'ro' ? 'Direct la domiciliu în intervalul ales' : 'Direct to your door in chosen time slot',
+              },
+              {
+                icon: <RotateCcw size={20} color="var(--color-laurel)" />,
+                title: l === 'ro' ? 'Pauză sau Anulare Oricând' : 'Pause or Cancel Anytime',
+                desc: l === 'ro' ? 'Fără penalizări, gestionezi din cont' : 'No penalties, manage directly online',
+              },
+              {
+                icon: <Sparkles size={20} color="var(--color-saffron)" />,
+                title: l === 'ro' ? 'Garanție de Prospețime' : '100% Freshness Guarantee',
+                desc: l === 'ro' ? 'Dacă un produs nu este perfect, îl înlocuim' : 'If any item isn’t perfect, we replace it',
+              },
+            ].map((g) => (
+              <div key={g.title} style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 'var(--radius-sm)',
+                    backgroundColor: 'var(--color-bg-subtle)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {g.icon}
+                </div>
+                <div>
+                  <h4 style={{ fontSize: '0.9375rem', fontWeight: 700, color: 'var(--color-ink)', marginBottom: '0.25rem' }}>
+                    {g.title}
+                  </h4>
+                  <p style={{ fontSize: '0.8125rem', color: 'var(--color-ink-muted)', lineHeight: 1.5 }}>
+                    {g.desc}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
-function BoxCard({ box, lang, index }: { box: BoxSubscription; lang: 'ro' | 'en'; index: number }) {
+function BoxCard({
+  box,
+  lang,
+  index,
+}: {
+  box: BoxSubscription;
+  lang: 'ro' | 'en';
+  index: number;
+}) {
   const l = lang;
-  const emoji = ['🧺', '🧺🧺', '🥇'][index] ?? '🧺';
   const [loading, setLoading] = React.useState(false);
 
   const handleSubscribe = async () => {
-    if (!box.stripePriceId) {
-      alert(
-        l === 'ro'
-          ? 'Abonamentele sunt în curs de configurare. Contactați-ne la contact@ferma.ro'
-          : 'Subscriptions are being configured. Contact us at contact@ferma.ro'
-      );
-      return;
-    }
-
     setLoading(true);
     try {
-      // Utiliser le price ID Stripe pour créer une session de paiement one-time
-      // (les abonnements récurrents nécessitent mode: 'subscription' dans checkout)
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          items: [{
-            product: {
-              id: box.id,
-              name: box.name,
-              description: box.description,
-              price: box.price,
-              unit: 'cutie',
-              slug: box.id,
-              origin: 'Ferma Noastră, România',
-              images: [],
-              stock: 99,
-              category: 'panier',
-              season: [],
-              badges: [],
-              featured: false,
-              available: true,
-              story: { ro: '', en: '' },
-              harvestDate: undefined,
+          items: [
+            {
+              product: {
+                id: box.id,
+                name: box.name,
+                description: box.description,
+                price: box.price,
+                unit: 'cutie',
+                slug: box.id,
+                origin: 'Ferma Noastră, România',
+                images: [box.image],
+                stock: 99,
+                category: 'panier',
+                season: [],
+                badges: [],
+                featured: false,
+                available: true,
+                story: { ro: '', en: '' },
+                harvestDate: undefined,
+              },
+              quantity: 1,
             },
-            quantity: 1,
-          }],
-          deliveryFee: 0, // Livraison incluse dans le prix du coș
+          ],
+          deliveryFee: 0,
         }),
       });
       const data = await res.json();
@@ -157,8 +209,8 @@ function BoxCard({ box, lang, index }: { box: BoxSubscription; lang: 'ro' | 'en'
       console.error('[Ferma/Subscribe]', err);
       alert(
         l === 'ro'
-          ? 'Eroare la inițializarea plății. Încercați din nou sau contactați-ne.'
-          : 'Payment initialization error. Please try again or contact us.'
+          ? 'Eroare la inițializarea plății. Vă rugăm încercați din nou.'
+          : 'Payment initialization error. Please try again.'
       );
     } finally {
       setLoading(false);
@@ -167,102 +219,144 @@ function BoxCard({ box, lang, index }: { box: BoxSubscription; lang: 'ro' | 'en'
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      style={{ display: 'flex', flexDirection: 'column' }}
     >
       <div
-        className="card"
+        className="card-craft"
         style={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
           position: 'relative',
-          border: box.popular ? '2px solid var(--color-terracotta)' : '1px solid var(--color-light)',
-          boxShadow: box.popular ? 'var(--shadow-lg)' : 'var(--shadow-sm)',
-          transform: box.popular ? 'scale(1.02)' : undefined,
+          backgroundColor: '#FFFFFF',
+          border: box.popular ? '2px solid var(--color-terracotta)' : '1px solid var(--color-border)',
         }}
       >
-        {/* Popular badge */}
+        {/* Popular Tag */}
         {box.popular && (
-          <div style={{
-            position: 'absolute', top: -14, left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'var(--color-terracotta)',
-            color: 'white',
-            padding: '0.25rem 1rem',
-            borderRadius: 'var(--radius-full)',
-            fontSize: '0.75rem',
-            fontWeight: 700,
-            letterSpacing: '0.04em',
-            whiteSpace: 'nowrap',
-          }}>
-            ⭐ {l === 'ro' ? 'Cel mai popular' : 'Most popular'}
+          <div
+            style={{
+              position: 'absolute',
+              top: -12,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              backgroundColor: 'var(--color-terracotta)',
+              color: '#FFFFFF',
+              padding: '0.3rem 0.85rem',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.6875rem',
+              fontWeight: 700,
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              zIndex: 3,
+              boxShadow: '0 2px 8px rgba(148, 46, 31, 0.3)',
+            }}
+          >
+            {l === 'ro' ? 'Cel mai apreciat' : 'Most popular'}
           </div>
         )}
 
-        {/* Header */}
-        <div style={{
-          padding: '2rem 1.75rem 1.5rem',
-          borderBottom: '1px solid var(--color-light)',
-          background: box.popular ? 'rgba(196,98,45,0.04)' : undefined,
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '3rem', marginBottom: '0.875rem' }}>{emoji}</div>
-          <h3 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '1.375rem',
-            fontWeight: 700,
-            color: 'var(--color-brown)',
-            marginBottom: '0.5rem',
-          }}>
+        {/* Real Artisan Basket Photo */}
+        <div
+          style={{
+            position: 'relative',
+            aspectRatio: '16 / 10',
+            width: '100%',
+            overflow: 'hidden',
+            backgroundColor: '#F3EFE6',
+          }}
+        >
+          <Image
+            src={box.image || '/images/boxes/box-familie.jpg'}
+            alt={box.name[l]}
+            fill
+            sizes="(max-width: 768px) 100vw, 33vw"
+            style={{ objectFit: 'cover' }}
+          />
+        </div>
+
+        {/* Card Header & Price */}
+        <div style={{ padding: '1.5rem', borderBottom: '1px solid var(--color-border-subtle)' }}>
+          <h3
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '1.5rem',
+              fontWeight: 600,
+              color: 'var(--color-ink)',
+              marginBottom: '0.35rem',
+            }}
+          >
             {box.name[l]}
           </h3>
-          <p style={{ fontSize: '0.9375rem', color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
+
+          <p style={{ fontSize: '0.875rem', color: 'var(--color-ink-muted)', lineHeight: 1.5, marginBottom: '1.25rem' }}>
             {box.description[l]}
           </p>
-          <div style={{ marginTop: '1.25rem' }}>
-            <span style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '2.25rem',
-              fontWeight: 700,
-              color: 'var(--color-terracotta)',
-            }}>
+
+          <div>
+            <span
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '2rem',
+                fontWeight: 700,
+                color: 'var(--color-ink)',
+              }}
+            >
               {(box.price / 100).toFixed(0)} RON
             </span>
-            <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginLeft: '0.375rem' }}>
+            <span style={{ fontSize: '0.8125rem', color: 'var(--color-ink-faint)', marginLeft: '0.35rem' }}>
               / {l === 'ro' ? 'săptămână' : 'week'}
             </span>
           </div>
         </div>
 
-        {/* Items */}
-        <div style={{ padding: '1.5rem 1.75rem' }}>
-          <p style={{
-            fontSize: '0.75rem', fontWeight: 600,
-            color: 'var(--color-sage)',
-            textTransform: 'uppercase', letterSpacing: '0.08em',
-            marginBottom: '0.875rem',
-          }}>
-            {l === 'ro' ? 'Conținut tipic' : 'Typical contents'}
-          </p>
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.625rem', marginBottom: '1.75rem' }}>
-            {box.items.map((item) => (
-              <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.9375rem' }}>
-                <Check size={15} style={{ flexShrink: 0, marginTop: '0.125rem' }} color="var(--color-sage)" />
-                <span style={{ color: 'var(--color-text-muted)' }}>{item}</span>
-              </li>
-            ))}
-          </ul>
+        {/* Content Checklist */}
+        <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <span
+              style={{
+                fontSize: '0.6875rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                color: 'var(--color-laurel)',
+                display: 'block',
+                marginBottom: '0.85rem',
+              }}
+            >
+              {l === 'ro' ? 'Conținutul Coșului' : 'Basket Contents'}
+            </span>
+
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '2rem' }}>
+              {box.items.map((item) => (
+                <li key={item} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.875rem' }}>
+                  <Check size={14} color="var(--color-laurel)" style={{ flexShrink: 0, marginTop: '2px' }} />
+                  <span style={{ color: 'var(--color-ink-muted)' }}>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           <button
             id={`subscribe-${box.id}`}
             className={`btn ${box.popular ? 'btn-primary' : 'btn-secondary'} btn-lg`}
-            style={{ width: '100%', justifyContent: 'center', opacity: loading ? 0.8 : 1 }}
+            style={{ width: '100%', justifyContent: 'center' }}
             onClick={handleSubscribe}
             disabled={loading}
           >
             {loading ? (
-              <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> {l === 'ro' ? 'Se încarcă...' : 'Loading...'}</>
+              <>
+                <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                <span>{l === 'ro' ? 'Se inițializează...' : 'Initializing...'}</span>
+              </>
             ) : (
-              <>{l === 'ro' ? 'Abonează-te Acum' : 'Subscribe Now'} <ArrowRight size={16} /></>
+              <>
+                <span>{l === 'ro' ? 'Abonează-te Acum' : 'Subscribe Now'}</span>
+                <ArrowRight size={15} />
+              </>
             )}
           </button>
         </div>

@@ -1,9 +1,22 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { ShoppingBasket, Minus, Plus, Leaf, MapPin, Clock, ChevronLeft, Star } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import {
+  ShoppingBag,
+  Minus,
+  Plus,
+  ArrowLeft,
+  Check,
+  ShieldCheck,
+  Truck,
+  Sun,
+  MapPin,
+  Clock,
+  Sparkles,
+} from 'lucide-react';
 import type { Product } from '@/types';
 import { useStore, formatPrice } from '@/store';
 import { PRODUCTS } from '@/data/products';
@@ -15,10 +28,12 @@ interface Props {
 
 export default function ProductDetailClient({ product }: Props) {
   const { addToCart, language } = useStore();
+  const l = language;
   const [qty, setQty] = React.useState(1);
   const [added, setAdded] = React.useState(false);
 
-  const l = language;
+  const mainImage = product.images?.[0] || '/images/hero-tomatoes.jpg';
+
   const relatedProducts = PRODUCTS.filter(
     (p) => p.category === product.category && p.id !== product.id && p.available
   ).slice(0, 3);
@@ -30,277 +45,363 @@ export default function ProductDetailClient({ product }: Props) {
   };
 
   const t = {
-    back: l === 'ro' ? '← Înapoi la magazin' : '← Back to shop',
-    origin: l === 'ro' ? 'Origine' : 'Origin',
-    harvest: l === 'ro' ? 'Recoltă' : 'Harvest',
-    story: l === 'ro' ? 'Povestea Produsului' : 'Product Story',
-    badges: l === 'ro' ? 'Certificări' : 'Certifications',
-    related: l === 'ro' ? 'Produse Similare' : 'Similar Products',
-    add: l === 'ro' ? `Adaugă ${qty > 1 ? `(×${qty})` : ''} în coș` : `Add ${qty > 1 ? `(×${qty})` : ''} to basket`,
-    added: l === 'ro' ? '✓ Adăugat în coș!' : '✓ Added to basket!',
-    total: l === 'ro' ? 'Total' : 'Total',
-    inStock: l === 'ro' ? 'în stoc' : 'in stock',
-    lowStock: l === 'ro' ? 'Stoc limitat!' : 'Limited stock!',
-  };
-
-  const categoryEmoji: Record<string, string> = {
-    tomate: '🍅', legume: '🥬', herbes: '🌿',
-    conserves: '🫙', oeufs: '🥚', miel: '🍯', panier: '🧺',
+    back: l === 'ro' ? 'Înapoi la Magazin' : 'Back to Shop',
+    origin: l === 'ro' ? 'Origine & Terroir' : 'Origin & Terroir',
+    harvest: l === 'ro' ? 'Calendar Recoltă' : 'Harvest Schedule',
+    culinaryStory: l === 'ro' ? 'Profil Aromatic & Tradiție' : 'Aroma Profile & Heritage',
+    badges: l === 'ro' ? 'Garanții de Calitate' : 'Quality Guarantees',
+    related: l === 'ro' ? 'Alte Produse din Aceeași Recoltă' : 'More from This Harvest',
+    add: l === 'ro' ? `Adaugă în Coș (${qty > 1 ? `${qty} × ` : ''}${formatPrice(product.price * qty)})` : `Add to Cart (${qty > 1 ? `${qty} × ` : ''}${formatPrice(product.price * qty)})`,
+    added: l === 'ro' ? '✓ Adăugat în Coș' : '✓ Added to Cart',
+    stockIn: l === 'ro' ? 'În stoc proaspăt' : 'In fresh stock',
+    stockLow: l === 'ro' ? 'Stoc limitat de sezon' : 'Limited seasonal batch',
   };
 
   return (
-    <div style={{ paddingTop: '5rem', minHeight: '100vh' }}>
-      {/* Breadcrumb */}
-      <div className="container-site" style={{ paddingTop: '2rem', paddingBottom: '1rem' }}>
-        <Link href="/boutique" style={{
-          display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
-          fontSize: '0.875rem', color: 'var(--color-text-muted)',
-          textDecoration: 'none',
-          transition: 'color 150ms',
-        }}>
-          <ChevronLeft size={16} />
-          {t.back}
-        </Link>
+    <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', paddingBottom: '6rem' }}>
+      {/* ── Breadcrumb Bar ── */}
+      <div style={{ borderBottom: '1px solid var(--color-border)', backgroundColor: '#FFFFFF', padding: '1rem 0' }}>
+        <div className="container-site">
+          <Link
+            href="/boutique"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              fontSize: '0.8125rem',
+              fontWeight: 600,
+              color: 'var(--color-ink-muted)',
+              textDecoration: 'none',
+              transition: 'color 150ms ease',
+            }}
+            onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--color-terracotta)')}
+            onMouseLeave={(e) => ((e.target as HTMLElement).style.color = 'var(--color-ink-muted)')}
+          >
+            <ArrowLeft size={14} />
+            <span>{t.back}</span>
+          </Link>
+        </div>
       </div>
 
-      {/* Product Detail */}
-      <div className="container-site">
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '3.5rem',
-          alignItems: 'start',
-          paddingBottom: '4rem',
-        }}>
-          {/* Gallery */}
+      {/* ── Main Product Stage ── */}
+      <div className="container-site" style={{ paddingTop: '3rem' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: 'clamp(2.5rem, 6vw, 4.5rem)',
+            alignItems: 'start',
+          }}
+        >
+          {/* Left Column: High-Res Editorial Photography */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Main image */}
-            <div style={{
-              borderRadius: 'var(--radius-xl)',
-              overflow: 'hidden',
-              aspectRatio: '1',
-              background: 'linear-gradient(135deg, var(--color-cream) 0%, var(--color-cream-dark) 100%)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: '10rem',
-              boxShadow: 'var(--shadow-lg)',
-              marginBottom: '1rem',
-            }}>
-              {categoryEmoji[product.category] ?? '🌱'}
-            </div>
+            <div
+              style={{
+                position: 'relative',
+                aspectRatio: '1 / 1',
+                borderRadius: 'var(--radius-xl)',
+                overflow: 'hidden',
+                boxShadow: 'var(--shadow-lg)',
+                border: '1px solid var(--color-border)',
+                backgroundColor: '#F3EFE6',
+              }}
+            >
+              <Image
+                src={mainImage}
+                alt={product.name[l]}
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={{ objectFit: 'cover' }}
+              />
 
-            {/* Badges */}
-            {product.badges.length > 0 && (
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                {product.badges.map((badge) => (
-                  <span key={badge} className="badge badge-sage" style={{ fontSize: '0.8125rem' }}>
-                    <Leaf size={11} /> {badge}
+              {/* Badges Overlay */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  left: '1rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.35rem',
+                  zIndex: 2,
+                }}
+              >
+                {product.featured && (
+                  <span className="badge badge-terracotta" style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(255,255,255,0.92)' }}>
+                    {l === 'ro' ? 'Favoritul Fermierului' : 'Farmer’s Selection'}
+                  </span>
+                )}
+                {product.badges.map((b) => (
+                  <span
+                    key={b}
+                    className="badge badge-laurel"
+                    style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(255,255,255,0.92)' }}
+                  >
+                    {b}
                   </span>
                 ))}
               </div>
-            )}
+            </div>
           </motion.div>
 
-          {/* Info */}
+          {/* Right Column: Culinary Details, Story & Purchase Panel */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
           >
-            {/* Category + Stock */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-              <span style={{
-                fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-sage)',
-                textTransform: 'uppercase', letterSpacing: '0.08em',
-              }}>
-                {product.category}
+            {/* Category & Status */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '0.75rem',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  color: 'var(--color-laurel)',
+                }}
+              >
+                {product.origin || 'Oltenia, România'}
               </span>
-              <span className={`badge ${product.stock <= 5 ? 'badge-urgency' : 'badge-sage'}`}>
-                {product.stock <= 5 ? `⚠ ${t.lowStock}` : `${product.stock} ${t.inStock}`}
+
+              <span
+                className={`badge ${product.stock <= 5 ? 'badge-saffron' : 'badge-laurel'}`}
+              >
+                {product.stock <= 5 ? t.stockLow : t.stockIn}
               </span>
             </div>
 
             {/* Title */}
-            <h1 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-              fontWeight: 700,
-              color: 'var(--color-brown)',
-              marginBottom: '0.75rem',
-              lineHeight: 1.2,
-            }}>
+            <h1
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: 'clamp(2rem, 4vw, 2.75rem)',
+                fontWeight: 600,
+                lineHeight: 1.15,
+                color: 'var(--color-ink)',
+                marginBottom: '1rem',
+              }}
+            >
               {product.name[l]}
             </h1>
 
-            {/* Description */}
-            <p style={{
-              fontSize: '1.0625rem',
-              color: 'var(--color-text-muted)',
-              lineHeight: 1.7,
-              marginBottom: '1.75rem',
-            }}>
+            {/* Short Culinary Description */}
+            <p
+              style={{
+                fontSize: '1.0625rem',
+                color: 'var(--color-ink-muted)',
+                lineHeight: 1.65,
+                marginBottom: '1.75rem',
+              }}
+            >
               {product.description[l]}
             </p>
 
-            {/* Meta info */}
-            <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '2rem', flexWrap: 'wrap' }}>
-              {product.origin && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-                  <MapPin size={14} color="var(--color-sage)" />
-                  <span><strong>{t.origin}:</strong> {product.origin}</span>
-                </div>
-              )}
-              {product.harvestDate && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-                  <Clock size={14} color="var(--color-sage)" />
-                  <span><strong>{t.harvest}:</strong> {product.harvestDate}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Price */}
-            <div style={{
-              background: 'var(--color-cream)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '1.25rem 1.5rem',
-              marginBottom: '1.5rem',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginBottom: '1rem' }}>
-                <span style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '2rem',
-                  fontWeight: 700,
-                  color: 'var(--color-terracotta)',
-                }}>
+            {/* ── Order Box ── */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: 'var(--radius-lg)',
+                border: '1px solid var(--color-border)',
+                padding: '1.5rem',
+                marginBottom: '2rem',
+                boxShadow: 'var(--shadow-sm)',
+              }}
+            >
+              {/* Unit Price */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: '0.5rem',
+                  marginBottom: '1.25rem',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily: 'var(--font-sans)',
+                    fontSize: '2rem',
+                    fontWeight: 700,
+                    color: 'var(--color-ink)',
+                  }}
+                >
                   {formatPrice(product.price)}
                 </span>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9375rem' }}>/ {product.unit}</span>
-              </div>
-
-              {/* Quantity */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <div style={{
-                  display: 'inline-flex', alignItems: 'center', gap: '0.75rem',
-                  background: 'var(--color-surface)',
-                  border: '1.5px solid var(--color-light)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0.25rem',
-                }}>
-                  <button onClick={() => setQty(Math.max(1, qty - 1))} className="btn btn-ghost" style={{ padding: '0.375rem' }}>
-                    <Minus size={16} />
-                  </button>
-                  <span style={{ minWidth: '2rem', textAlign: 'center', fontWeight: 700, fontSize: '1.0625rem' }}>
-                    {qty}
-                  </span>
-                  <button onClick={() => setQty(Math.min(product.stock, qty + 1))} className="btn btn-ghost" style={{ padding: '0.375rem' }}>
-                    <Plus size={16} />
-                  </button>
-                </div>
-                <span style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>
-                  {t.total}: <strong style={{ color: 'var(--color-terracotta)' }}>{formatPrice(product.price * qty)}</strong>
+                <span style={{ fontSize: '0.9375rem', color: 'var(--color-ink-faint)' }}>
+                  / {product.unit}
                 </span>
               </div>
 
-              <motion.button
-                id="product-add-to-cart"
-                onClick={handleAdd}
-                disabled={product.stock === 0 || added}
-                className="btn btn-primary btn-lg"
-                whileTap={{ scale: 0.98 }}
-                style={{ width: '100%', justifyContent: 'center', background: added ? 'var(--color-sage)' : undefined }}
-              >
-                {added ? (
-                  <>{t.added}</>
-                ) : (
-                  <><ShoppingBasket size={20} /> {t.add}</>
-                )}
-              </motion.button>
+              {/* Quantity Stepper & Add Action */}
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                {/* Quantity Controls */}
+                <div
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    border: '1px solid var(--color-border-strong)',
+                    borderRadius: 'var(--radius-full)',
+                    padding: '0.2rem',
+                    backgroundColor: 'var(--color-bg-subtle)',
+                  }}
+                >
+                  <button
+                    onClick={() => setQty(Math.max(1, qty - 1))}
+                    className="btn btn-ghost"
+                    style={{ width: 34, height: 34, padding: 0, borderRadius: '50%' }}
+                    aria-label="Decrease quantity"
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span
+                    style={{
+                      width: '2.5rem',
+                      textAlign: 'center',
+                      fontWeight: 700,
+                      fontSize: '1rem',
+                      fontFamily: 'var(--font-sans)',
+                    }}
+                  >
+                    {qty}
+                  </span>
+                  <button
+                    onClick={() => setQty(Math.min(product.stock, qty + 1))}
+                    className="btn btn-ghost"
+                    style={{ width: 34, height: 34, padding: 0, borderRadius: '50%' }}
+                    aria-label="Increase quantity"
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+
+                {/* Primary Add Button */}
+                <button
+                  id="product-add-to-cart"
+                  onClick={handleAdd}
+                  disabled={product.stock === 0}
+                  className="btn btn-primary btn-lg"
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    backgroundColor: added ? '#2C4A34' : undefined,
+                    borderColor: added ? '#2C4A34' : undefined,
+                  }}
+                >
+                  {added ? (
+                    <>
+                      <Check size={16} />
+                      <span>{t.added}</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag size={16} />
+                      <span>{t.add}</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
-            {/* Story */}
+            {/* ── Culinary Terroir Essay ── */}
             {product.story[l] && (
-              <div style={{
-                borderLeft: '3px solid var(--color-terracotta)',
-                paddingLeft: '1.25rem',
-              }}>
-                <p style={{
-                  fontSize: '0.8125rem', fontWeight: 600,
-                  color: 'var(--color-terracotta)',
-                  textTransform: 'uppercase', letterSpacing: '0.08em',
-                  marginBottom: '0.5rem',
-                }}>
-                  {t.story}
-                </p>
-                <p style={{ fontSize: '0.9375rem', color: 'var(--color-text-muted)', lineHeight: 1.7, fontStyle: 'italic' }}>
-                  {product.story[l]}
+              <div
+                style={{
+                  backgroundColor: 'var(--color-bg-subtle)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '1.25rem 1.5rem',
+                  marginBottom: '2rem',
+                  border: '1px solid var(--color-border)',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.08em',
+                    color: 'var(--color-terracotta)',
+                    display: 'block',
+                    marginBottom: '0.45rem',
+                  }}
+                >
+                  {t.culinaryStory}
+                </span>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '1rem',
+                    color: 'var(--color-ink)',
+                    lineHeight: 1.65,
+                    fontStyle: 'italic',
+                  }}
+                >
+                  „{product.story[l]}”
                 </p>
               </div>
             )}
+
+            {/* ── Delivery & Freshness Guarantees ── */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 1fr',
+                gap: '1rem',
+                fontSize: '0.8125rem',
+                color: 'var(--color-ink-muted)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Clock size={16} color="var(--color-laurel)" />
+                <span>{l === 'ro' ? 'Recoltare în ziua livrării' : 'Harvested on delivery day'}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Truck size={16} color="var(--color-laurel)" />
+                <span>{l === 'ro' ? 'Livrare refrigerată în 24h' : 'Chilled delivery in 24h'}</span>
+              </div>
+            </div>
           </motion.div>
         </div>
-      </div>
 
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <section style={{ background: 'var(--color-cream)', padding: '3rem 0' }}>
-          <div className="container-site">
-            <h2 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: '1.75rem', fontWeight: 700,
-              color: 'var(--color-brown)',
-              marginBottom: '2rem',
-            }}>
+        {/* ── Related Harvest Section ── */}
+        {relatedProducts.length > 0 && (
+          <div style={{ marginTop: '5rem', paddingTop: '3.5rem', borderTop: '1px solid var(--color-border)' }}>
+            <h2
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '1.75rem',
+                fontWeight: 600,
+                color: 'var(--color-ink)',
+                marginBottom: '2rem',
+              }}
+            >
               {t.related}
             </h2>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-              gap: '1.25rem',
-            }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+                gap: '1.75rem',
+              }}
+            >
               {relatedProducts.map((p, i) => (
                 <ProductCard key={p.id} product={p} lang={l} index={i} />
               ))}
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Mobile sticky CTA */}
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: 'rgba(249,244,234,0.97)',
-        backdropFilter: 'blur(12px)',
-        borderTop: '1px solid var(--color-light)',
-        padding: '1rem 1.5rem',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: '1rem',
-        zIndex: 80,
-      }}
-        className="show-on-mobile"
-      >
-        <div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-terracotta)' }}>
-            {formatPrice(product.price)}
-          </div>
-          <div style={{ fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}>/ {product.unit}</div>
-        </div>
-        <button
-          onClick={handleAdd}
-          className="btn btn-primary"
-          style={{ flex: 1, maxWidth: '200px', justifyContent: 'center' }}
-        >
-          <ShoppingBasket size={16} />
-          {added ? '✓' : (l === 'ro' ? 'Adaugă în coș' : 'Add to basket')}
-        </button>
+        )}
       </div>
-
-      <style>{`
-        .show-on-mobile { display: none; }
-        @media (max-width: 768px) { .show-on-mobile { display: flex; } }
-      `}</style>
     </div>
   );
 }

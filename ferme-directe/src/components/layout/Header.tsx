@@ -2,32 +2,37 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ShoppingBasket, Menu, X, Globe, Leaf } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { ShoppingBag, Menu, X, Globe, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useStore } from '@/store';
-import { formatPrice } from '@/store';
+import { useStore, formatPrice } from '@/store';
 
-const NAV_LINKS_RO = [
-  { href: '/boutique', label: 'Magazin' },
-  { href: '/paniers', label: 'Coșuri Abonament' },
-  { href: '/notre-ferme', label: 'Ferma Noastră' },
-];
-
-const NAV_LINKS_EN = [
-  { href: '/boutique', label: 'Shop' },
-  { href: '/paniers', label: 'Subscription Baskets' },
-  { href: '/notre-ferme', label: 'Our Farm' },
-];
+const NAV_LINKS = {
+  ro: [
+    { href: '/boutique', label: 'Magazin & Recoltă' },
+    { href: '/paniers', label: 'Coșuri Abonament' },
+    { href: '/notre-ferme', label: 'Povestea Fermei' },
+  ],
+  en: [
+    { href: '/boutique', label: 'Shop & Harvest' },
+    { href: '/paniers', label: 'Weekly Baskets' },
+    { href: '/notre-ferme', label: 'Our Story' },
+  ],
+};
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+  const pathname = usePathname();
+
   const { cart, toggleCart, getCartCount, getCartTotal, language, setLanguage } = useStore();
-  const cartCount = getCartCount();
-  const cartTotal = getCartTotal();
-  const navLinks = language === 'ro' ? NAV_LINKS_RO : NAV_LINKS_EN;
+  const cartCount = mounted ? getCartCount() : 0;
+  const cartTotal = mounted ? getCartTotal() : 0;
+  const navLinks = language === 'ro' ? NAV_LINKS.ro : NAV_LINKS.en;
 
   React.useEffect(() => {
+    setMounted(true);
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -35,169 +40,248 @@ export default function Header() {
 
   return (
     <>
+      {/* Top micro-announcement banner */}
+      <div style={{
+        backgroundColor: '#1C1917',
+        color: '#F5EDE0',
+        fontSize: '0.75rem',
+        letterSpacing: '0.04em',
+        padding: '0.45rem 1rem',
+        textAlign: 'center',
+        fontWeight: 500,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.5rem',
+        zIndex: 110,
+        position: 'relative',
+      }}>
+        <span style={{ display: 'inline-block', width: 6, height: 6, borderRadius: '50%', backgroundColor: '#52B788' }} />
+        <span>
+          {language === 'ro' 
+            ? 'Recoltă zilnică în Oltenia • Livrare gratuită de la 150 RON'
+            : 'Fresh daily harvest in Oltenia • Free delivery on orders over 150 RON'}
+        </span>
+      </div>
+
       <header
         style={{
-          position: 'fixed',
+          position: 'sticky',
           top: 0,
           left: 0,
           right: 0,
           zIndex: 100,
-          transition: 'all 250ms cubic-bezier(0.16,1,0.3,1)',
-          backgroundColor: scrolled ? 'rgba(249,244,234,0.95)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(12px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(201,194,180,0.4)' : '1px solid transparent',
+          transition: 'all 200ms ease',
+          backgroundColor: scrolled ? 'rgba(251, 249, 245, 0.94)' : 'rgba(251, 249, 245, 0.85)',
+          backdropFilter: 'blur(16px)',
+          borderBottom: '1px solid',
+          borderColor: scrolled ? 'rgba(28, 25, 23, 0.1)' : 'rgba(28, 25, 23, 0.05)',
         }}
       >
         <div className="container-site">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
-            {/* Logo */}
-            <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{
-                width: 36, height: 36,
-                background: 'var(--color-terracotta)',
-                borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Leaf size={18} color="white" />
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            height: '70px',
+          }}>
+            {/* Brand Logo & Seal */}
+            <Link
+              href="/"
+              style={{
+                textDecoration: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+              }}
+            >
+              <div
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-terracotta)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF',
+                  boxShadow: '0 2px 8px rgba(148, 46, 31, 0.25)',
+                }}
+              >
+                <span style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontStyle: 'italic', fontWeight: 600 }}>F</span>
               </div>
-              <span style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: '1.5rem',
-                fontWeight: 600,
-                color: 'var(--color-brown)',
-                letterSpacing: '-0.02em',
-              }}>
-                Ferma
-              </span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <nav style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }} className="hidden-mobile">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span
                   style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.9375rem',
-                    fontWeight: 500,
-                    color: 'var(--color-brown-light)',
-                    textDecoration: 'none',
-                    padding: '0.5rem 0.875rem',
-                    borderRadius: 'var(--radius-md)',
-                    transition: 'all 150ms ease',
-                  }}
-                  onMouseEnter={e => {
-                    (e.target as HTMLElement).style.color = 'var(--color-terracotta)';
-                    (e.target as HTMLElement).style.background = 'rgba(196,98,45,0.06)';
-                  }}
-                  onMouseLeave={e => {
-                    (e.target as HTMLElement).style.color = 'var(--color-brown-light)';
-                    (e.target as HTMLElement).style.background = 'transparent';
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '1.5rem',
+                    fontWeight: 700,
+                    color: 'var(--color-ink)',
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1,
                   }}
                 >
-                  {link.label}
-                </Link>
-              ))}
+                  Ferma
+                </span>
+                <span
+                  style={{
+                    fontSize: '0.625rem',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-ink-muted)',
+                    fontWeight: 600,
+                    marginTop: '2px',
+                  }}
+                >
+                  Oltenia • 1994
+                </span>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation Links */}
+            <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }} className="hidden-mobile">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    style={{
+                      fontFamily: 'var(--font-sans)',
+                      fontSize: '0.9375rem',
+                      fontWeight: isActive ? 600 : 500,
+                      color: isActive ? 'var(--color-terracotta)' : 'var(--color-ink)',
+                      textDecoration: 'none',
+                      position: 'relative',
+                      padding: '0.35rem 0',
+                      transition: 'color 150ms ease',
+                    }}
+                    onMouseEnter={(e) => ((e.target as HTMLElement).style.color = 'var(--color-terracotta)')}
+                    onMouseLeave={(e) => {
+                      if (!isActive) (e.target as HTMLElement).style.color = 'var(--color-ink)';
+                    }}
+                  >
+                    {link.label}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeNav"
+                        style={{
+                          position: 'absolute',
+                          bottom: -2,
+                          left: 0,
+                          right: 0,
+                          height: 2,
+                          backgroundColor: 'var(--color-terracotta)',
+                          borderRadius: 2,
+                        }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
             </nav>
 
-            {/* Right Actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              {/* Language Toggle */}
+            {/* Header Actions */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              {/* Language Switcher */}
               <button
                 onClick={() => setLanguage(language === 'ro' ? 'en' : 'ro')}
                 className="btn btn-ghost btn-sm"
-                style={{ gap: '0.25rem', fontWeight: 500, fontSize: '0.8125rem', color: 'var(--color-text-muted)' }}
-                title={language === 'ro' ? 'Switch to English' : 'Schimbă în Română'}
+                style={{
+                  gap: '0.35rem',
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  border: '1px solid var(--color-border)',
+                  padding: '0.35rem 0.65rem',
+                }}
+                aria-label="Toggle language"
               >
-                <Globe size={14} />
-                {language === 'ro' ? 'EN' : 'RO'}
+                <Globe size={13} color="var(--color-ink-muted)" />
+                <span>{language.toUpperCase()}</span>
               </button>
 
-              {/* Cart button */}
+              {/* Cart Drawer Trigger */}
               <button
                 id="cart-button"
                 onClick={toggleCart}
                 className="btn btn-primary btn-sm"
-                style={{ gap: '0.5rem', position: 'relative' }}
+                style={{
+                  gap: '0.5rem',
+                  position: 'relative',
+                  padding: '0.45rem 1rem',
+                }}
               >
-                <ShoppingBasket size={16} />
-                <span className="hidden-mobile">
-                  {cartCount > 0 ? formatPrice(cartTotal) : (language === 'ro' ? 'Coș' : 'Basket')}
-                </span>
-                <AnimatePresence>
-                  {cartCount > 0 && (
-                    <motion.span
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      style={{
-                        position: 'absolute',
-                        top: -6,
-                        right: -6,
-                        width: 18,
-                        height: 18,
-                        background: 'var(--color-brown)',
-                        color: 'white',
-                        borderRadius: '50%',
-                        fontSize: '0.6875rem',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {cartCount}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
+                <ShoppingBag size={15} />
+                <span>{cartCount > 0 ? formatPrice(cartTotal) : (language === 'ro' ? 'Coș' : 'Cart')}</span>
+                {cartCount > 0 && (
+                  <span
+                    style={{
+                      width: 18,
+                      height: 18,
+                      borderRadius: '50%',
+                      backgroundColor: '#FFFFFF',
+                      color: 'var(--color-terracotta)',
+                      fontSize: '0.6875rem',
+                      fontWeight: 700,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: '0.15rem',
+                    }}
+                  >
+                    {cartCount}
+                  </span>
+                )}
               </button>
 
-              {/* Mobile menu button */}
+              {/* Mobile Hamburger */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="btn btn-ghost btn-icon show-mobile"
-                aria-label="Menu"
+                aria-label="Open menu"
+                style={{ border: '1px solid var(--color-border)' }}
               >
-                {menuOpen ? <X size={20} /> : <Menu size={20} />}
+                {menuOpen ? <X size={18} /> : <Menu size={18} />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Navigation Drawer */}
         <AnimatePresence>
           {menuOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                background: 'var(--color-surface)',
-                borderTop: '1px solid var(--color-light)',
+                backgroundColor: 'var(--color-surface)',
+                borderTop: '1px solid var(--color-border)',
                 overflow: 'hidden',
               }}
             >
-              <div className="container-site" style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
-                {navLinks.map((link, i) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    style={{
-                      display: 'block',
-                      padding: '0.875rem 0',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '1.0625rem',
-                      fontWeight: 500,
-                      color: 'var(--color-brown)',
-                      textDecoration: 'none',
-                      borderBottom: i < navLinks.length - 1 ? '1px solid var(--color-light)' : 'none',
-                    }}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+              <div className="container-site" style={{ padding: '1.25rem 1.5rem' }}>
+                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      style={{
+                        fontFamily: 'var(--font-serif)',
+                        fontSize: '1.35rem',
+                        fontWeight: 600,
+                        color: 'var(--color-ink)',
+                        textDecoration: 'none',
+                        padding: '0.75rem 0',
+                        borderBottom: '1px solid var(--color-border-subtle)',
+                      }}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </nav>
               </div>
             </motion.div>
           )}
@@ -205,11 +289,11 @@ export default function Header() {
       </header>
 
       <style>{`
-        @media (max-width: 768px) {
+        @media (max-width: 820px) {
           .hidden-mobile { display: none !important; }
           .show-mobile { display: flex !important; }
         }
-        @media (min-width: 769px) {
+        @media (min-width: 821px) {
           .hidden-mobile { display: flex !important; }
           .show-mobile { display: none !important; }
         }

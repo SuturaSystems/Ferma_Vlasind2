@@ -2,38 +2,36 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Filter, Search, X } from 'lucide-react';
-import type { Category } from '@/types';
+import { Search, X, SlidersHorizontal } from 'lucide-react';
 import { PRODUCTS, getProductsByCategory } from '@/data/products';
 import { useStore } from '@/store';
 import ProductCard from '@/components/product/ProductCard';
-import type { Metadata } from 'next';
 
-const CATEGORIES_RO: { id: string; label: string; emoji: string }[] = [
-  { id: 'all', label: 'Toate produsele', emoji: '🌱' },
-  { id: 'tomate', label: 'Tomate', emoji: '🍅' },
-  { id: 'legume', label: 'Legume', emoji: '🥬' },
-  { id: 'oeufs', label: 'Ouă', emoji: '🥚' },
-  { id: 'miel', label: 'Miere', emoji: '🍯' },
-  { id: 'conserves', label: 'Conserve', emoji: '🫙' },
-  { id: 'herbes', label: 'Ierburi', emoji: '🌿' },
-];
-
-const CATEGORIES_EN: { id: string; label: string; emoji: string }[] = [
-  { id: 'all', label: 'All products', emoji: '🌱' },
-  { id: 'tomate', label: 'Tomatoes', emoji: '🍅' },
-  { id: 'legume', label: 'Vegetables', emoji: '🥬' },
-  { id: 'oeufs', label: 'Eggs', emoji: '🥚' },
-  { id: 'miel', label: 'Honey', emoji: '🍯' },
-  { id: 'conserves', label: 'Preserves', emoji: '🫙' },
-  { id: 'herbes', label: 'Herbs', emoji: '🌿' },
-];
+const CATEGORIES = {
+  ro: [
+    { id: 'all', label: 'Toate Produsele' },
+    { id: 'tomate', label: 'Tomate de Patrimoniu' },
+    { id: 'legume', label: 'Legume & Verdețuri' },
+    { id: 'oeufs', label: 'Ouă de Pășune' },
+    { id: 'miel', label: 'Miere Crudă' },
+    { id: 'conserves', label: 'Conserve Artizanale' },
+  ],
+  en: [
+    { id: 'all', label: 'All Harvest' },
+    { id: 'tomate', label: 'Heritage Tomatoes' },
+    { id: 'legume', label: 'Greens & Vegetables' },
+    { id: 'oeufs', label: 'Pasture Eggs' },
+    { id: 'miel', label: 'Raw Honey' },
+    { id: 'conserves', label: 'Artisan Preserves' },
+  ],
+};
 
 export default function BoutiquePage() {
   const { language } = useStore();
+  const l = language;
   const [activeCategory, setActiveCategory] = React.useState<string>('all');
   const [search, setSearch] = React.useState('');
-  const categories = language === 'ro' ? CATEGORIES_RO : CATEGORIES_EN;
+  const categories = l === 'ro' ? CATEGORIES.ro : CATEGORIES.en;
 
   const filteredProducts = React.useMemo(() => {
     let products = getProductsByCategory(activeCategory);
@@ -43,101 +41,158 @@ export default function BoutiquePage() {
         (p) =>
           p.name.ro.toLowerCase().includes(q) ||
           p.name.en.toLowerCase().includes(q) ||
-          p.description.ro.toLowerCase().includes(q)
+          p.description.ro.toLowerCase().includes(q) ||
+          p.description.en.toLowerCase().includes(q)
       );
     }
     return products;
   }, [activeCategory, search]);
 
   return (
-    <>
-      {/* Page Hero */}
-      <section style={{
-        paddingTop: '8rem', paddingBottom: '3rem',
-        background: 'linear-gradient(180deg, var(--color-cream) 0%, var(--color-offwhite) 100%)',
-      }}>
+    <div style={{ backgroundColor: 'var(--color-bg)', minHeight: '100vh', paddingBottom: '6rem' }}>
+      {/* ── Page Header Banner ── */}
+      <section
+        style={{
+          padding: 'clamp(3rem, 6vw, 4.5rem) 0 2.5rem',
+          borderBottom: '1px solid var(--color-border)',
+          backgroundColor: '#FFFFFF',
+        }}
+      >
         <div className="container-site">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              color: 'var(--color-laurel)',
+              display: 'block',
+              marginBottom: '0.5rem',
+            }}
           >
-            <h1 style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 5vw, 3.5rem)',
-              fontWeight: 700,
-              color: 'var(--color-brown)',
+            {l === 'ro' ? 'Recoltă de Sezon' : 'Seasonal Harvest'}
+          </span>
+          <h1
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
+              fontWeight: 600,
+              color: 'var(--color-ink)',
+              letterSpacing: '-0.02em',
               marginBottom: '0.75rem',
-            }}>
-              {language === 'ro' ? 'Magazinul Fermei' : 'Farm Shop'}
-            </h1>
-            <p style={{
+            }}
+          >
+            {l === 'ro' ? 'Magazinul Fermei' : 'The Farm Shop'}
+          </h1>
+          <p
+            style={{
               fontSize: '1.0625rem',
-              color: 'var(--color-text-muted)',
-              maxWidth: '50ch',
-            }}>
-              {language === 'ro'
-                ? 'Produse proaspete, culese în dimineața livrării. Totul direct de la ferma noastră din Oltenia.'
-                : 'Fresh products, harvested the morning of delivery. Everything directly from our farm in Oltenia.'}
-            </p>
-          </motion.div>
+              color: 'var(--color-ink-muted)',
+              maxWidth: '56ch',
+              lineHeight: 1.6,
+            }}
+          >
+            {l === 'ro'
+              ? 'Fiecare produs este cules manual în zorii zilei și ambalat în ambalaje biodegradabile. Comandă astăzi pentru livrare mâine.'
+              : 'Every item is hand-picked at dawn and packaged in biodegradable materials. Order today for delivery tomorrow.'}
+          </p>
         </div>
       </section>
 
-      {/* Filters + Search */}
-      <div style={{
-        position: 'sticky', top: 72, zIndex: 50,
-        background: 'rgba(249,244,234,0.95)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid var(--color-light)',
-        padding: '1rem 0',
-      }}>
+      {/* ── Filter & Search Control Bar ── */}
+      <div
+        style={{
+          position: 'sticky',
+          top: 70,
+          zIndex: 40,
+          backgroundColor: 'rgba(251, 249, 245, 0.94)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid var(--color-border)',
+          padding: '1rem 0',
+        }}
+      >
         <div className="container-site">
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            {/* Category Pills */}
-            <div style={{ display: 'flex', gap: '0.5rem', flex: 1, overflowX: 'auto', paddingBottom: '4px' }}>
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  id={`filter-${cat.id}`}
-                  className="btn btn-sm"
-                  style={{
-                    whiteSpace: 'nowrap',
-                    background: activeCategory === cat.id ? 'var(--color-terracotta)' : 'var(--color-surface)',
-                    color: activeCategory === cat.id ? 'white' : 'var(--color-brown)',
-                    border: activeCategory === cat.id ? 'none' : '1.5px solid var(--color-light)',
-                    transition: 'all 200ms ease',
-                  }}
-                >
-                  {cat.emoji} {cat.label}
-                </button>
-              ))}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1.25rem',
+              flexWrap: 'wrap',
+            }}
+          >
+            {/* Category Filter Pills */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.5rem',
+                overflowX: 'auto',
+                paddingBottom: '2px',
+                flex: 1,
+              }}
+            >
+              {categories.map((cat) => {
+                const isActive = activeCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    id={`filter-${cat.id}`}
+                    className={`btn btn-sm ${isActive ? 'btn-dark' : 'btn-secondary'}`}
+                    style={{
+                      padding: '0.45rem 1rem',
+                      fontWeight: isActive ? 600 : 500,
+                    }}
+                  >
+                    {cat.label}
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Search */}
-            <div style={{ position: 'relative', minWidth: '200px' }}>
-              <Search size={16} style={{
-                position: 'absolute', left: '0.75rem', top: '50%',
-                transform: 'translateY(-50%)',
-                color: 'var(--color-text-muted)', pointerEvents: 'none',
-              }} />
+            {/* Search Box */}
+            <div style={{ position: 'relative', minWidth: '220px' }}>
+              <Search
+                size={15}
+                style={{
+                  position: 'absolute',
+                  left: '0.85rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'var(--color-ink-muted)',
+                  pointerEvents: 'none',
+                }}
+              />
               <input
                 type="search"
                 id="product-search"
                 className="input"
-                placeholder={language === 'ro' ? 'Caută...' : 'Search...'}
+                placeholder={l === 'ro' ? 'Caută un produs...' : 'Search a product...'}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                style={{ paddingLeft: '2.25rem', paddingRight: search ? '2.25rem' : '1rem', height: '38px' }}
+                style={{
+                  paddingLeft: '2.4rem',
+                  paddingRight: search ? '2rem' : '1rem',
+                  height: '40px',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.875rem',
+                }}
               />
               {search && (
-                <button onClick={() => setSearch('')} style={{
-                  position: 'absolute', right: '0.75rem', top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: 'var(--color-text-muted)',
-                }}>
+                <button
+                  onClick={() => setSearch('')}
+                  style={{
+                    position: 'absolute',
+                    right: '0.75rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'var(--color-ink-muted)',
+                  }}
+                  aria-label="Clear search"
+                >
                   <X size={14} />
                 </button>
               )}
@@ -146,37 +201,88 @@ export default function BoutiquePage() {
         </div>
       </div>
 
-      {/* Products Grid */}
-      <section style={{ padding: '2.5rem 0 5rem' }}>
-        <div className="container-site">
-          {filteredProducts.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '5rem 0', color: 'var(--color-text-muted)' }}>
-              <p style={{ fontSize: '3rem', marginBottom: '1rem' }}>🌾</p>
-              <p style={{ fontFamily: 'var(--font-display)', fontSize: '1.25rem', fontWeight: 600 }}>
-                {language === 'ro' ? 'Niciun produs găsit' : 'No products found'}
-              </p>
-              <button onClick={() => { setSearch(''); setActiveCategory('all'); }} className="btn btn-secondary" style={{ marginTop: '1.5rem' }}>
-                {language === 'ro' ? 'Resetează filtrele' : 'Reset filters'}
-              </button>
-            </div>
-          ) : (
-            <>
-              <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', marginBottom: '1.5rem' }}>
-                {filteredProducts.length} {language === 'ro' ? 'produse' : 'products'}
-              </p>
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '1.5rem',
-              }}>
-                {filteredProducts.map((product, i) => (
-                  <ProductCard key={product.id} product={product} lang={language} index={i} />
-                ))}
-              </div>
-            </>
+      {/* ── Product Catalog Grid ── */}
+      <div className="container-site" style={{ paddingTop: '2.5rem' }}>
+        {/* Results Counter */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '1.75rem',
+            fontSize: '0.875rem',
+            color: 'var(--color-ink-muted)',
+          }}
+        >
+          <span>
+            {filteredProducts.length} {l === 'ro' ? 'produse disponibile' : 'items available'}
+          </span>
+          {activeCategory !== 'all' && (
+            <button
+              onClick={() => setActiveCategory('all')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-terracotta)',
+                fontSize: '0.8125rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {l === 'ro' ? 'Arată toate' : 'Show all'}
+            </button>
           )}
         </div>
-      </section>
-    </>
+
+        {filteredProducts.length === 0 ? (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '6rem 1rem',
+              backgroundColor: '#FFFFFF',
+              borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: 'var(--font-serif)',
+                fontSize: '1.5rem',
+                color: 'var(--color-ink)',
+                marginBottom: '0.5rem',
+              }}
+            >
+              {l === 'ro' ? 'Niciun produs găsit' : 'No products found'}
+            </h3>
+            <p style={{ fontSize: '0.9375rem', color: 'var(--color-ink-muted)', marginBottom: '1.5rem' }}>
+              {l === 'ro'
+                ? 'Încearcă să schimbi termenul de căutare sau categoria selectată.'
+                : 'Try adjusting your search query or changing the category filter.'}
+            </p>
+            <button
+              onClick={() => {
+                setSearch('');
+                setActiveCategory('all');
+              }}
+              className="btn btn-primary"
+            >
+              {l === 'ro' ? 'Resetează Filtrele' : 'Reset Filters'}
+            </button>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+              gap: '1.75rem',
+            }}
+          >
+            {filteredProducts.map((product, i) => (
+              <ProductCard key={product.id} product={product} lang={l} index={i} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

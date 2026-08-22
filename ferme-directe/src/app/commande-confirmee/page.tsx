@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, ArrowRight, ShoppingBasket } from 'lucide-react';
+import { CheckCircle2, ArrowRight, ShoppingBag, Truck, Calendar, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useStore } from '@/store';
 
@@ -11,92 +11,133 @@ export default function OrderConfirmedPage() {
   const l = language;
 
   React.useEffect(() => {
-    // Clear cart after successful payment
     clearCart();
   }, [clearCart]);
 
   return (
-    <div style={{
-      paddingTop: '7rem', paddingBottom: '5rem',
-      minHeight: '100vh',
-      display: 'flex', alignItems: 'center',
-      background: 'var(--color-offwhite)',
-    }}>
-      <div className="container-site" style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+    <div
+      style={{
+        paddingTop: '6rem',
+        paddingBottom: '6rem',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        backgroundColor: 'var(--color-bg)',
+      }}
+    >
+      <div className="container-narrow" style={{ textAlign: 'center' }}>
+        {/* Success Icon Badge */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', damping: 15, stiffness: 200, delay: 0.1 }}
+          transition={{ type: 'spring', damping: 18, stiffness: 220, delay: 0.1 }}
           style={{
-            width: 80, height: 80,
-            background: 'rgba(74,124,89,0.15)',
+            width: 72,
+            height: 72,
+            backgroundColor: 'var(--color-laurel-soft)',
             borderRadius: '50%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1.75rem',
+            color: 'var(--color-laurel)',
           }}
         >
-          <CheckCircle size={40} color="var(--color-success)" />
+          <CheckCircle2 size={36} />
         </motion.div>
 
+        {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
-            fontWeight: 700,
-            color: 'var(--color-brown)',
+            fontFamily: 'var(--font-serif)',
+            fontSize: 'clamp(2rem, 4.5vw, 3rem)',
+            fontWeight: 600,
+            color: 'var(--color-ink)',
             marginBottom: '1rem',
           }}
         >
-          {l === 'ro' ? 'Comandă Confirmată! 🌿' : 'Order Confirmed! 🌿'}
+          {l === 'ro' ? 'Comandă Confirmată cu Succes' : 'Order Confirmed Successfully'}
         </motion.h1>
 
+        {/* Lead message */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35, duration: 0.5 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
           style={{
-            fontSize: '1.0625rem',
-            color: 'var(--color-text-muted)',
-            lineHeight: 1.7,
-            marginBottom: '2.5rem',
+            fontSize: '1.125rem',
+            color: 'var(--color-ink-muted)',
+            lineHeight: 1.65,
+            maxWidth: '52ch',
+            margin: '0 auto 2.5rem',
           }}
         >
           {l === 'ro'
-            ? 'Îți mulțumim! Comanda ta a fost primită și confirmată. Vom pregăti produsele cu grijă și le vom livra proaspete la adresa ta.'
-            : 'Thank you! Your order has been received and confirmed. We will carefully prepare the products and deliver them fresh to your address.'}
+            ? 'Îți mulțumim pentru că susții agricultura regenerativă și fermierii locali. Produsele tale vor fi culese proaspete în dimineața livrării.'
+            : 'Thank you for supporting regenerative agriculture and local farmers. Your produce will be harvested fresh on the morning of delivery.'}
         </motion.p>
 
+        {/* Order Details Card */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
+          transition={{ delay: 0.4, duration: 0.5 }}
           style={{
-            background: 'var(--color-cream)',
+            backgroundColor: '#FFFFFF',
             borderRadius: 'var(--radius-xl)',
-            padding: '1.5rem',
-            marginBottom: '2rem',
+            border: '1px solid var(--color-border)',
+            padding: '2rem',
+            maxWidth: '520px',
+            margin: '0 auto 2.5rem',
+            textAlign: 'left',
+            boxShadow: 'var(--shadow-sm)',
           }}
         >
-          <p style={{ fontWeight: 600, color: 'var(--color-brown)', marginBottom: '0.5rem' }}>
-            📧 {l === 'ro' ? 'Verificați emailul' : 'Check your email'}
-          </p>
-          <p style={{ fontSize: '0.9375rem', color: 'var(--color-text-muted)' }}>
-            {l === 'ro'
-              ? 'Am trimis o confirmare cu detaliile comenzii pe adresa ta de email.'
-              : 'We sent a confirmation with your order details to your email address.'}
-          </p>
+          <h3 style={{ fontSize: '0.875rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--color-laurel)', marginBottom: '1.25rem' }}>
+            {l === 'ro' ? 'Ce urmează?' : 'What happens next?'}
+          </h3>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.9375rem', color: 'var(--color-ink-muted)' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+              <Mail size={18} color="var(--color-terracotta)" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span>
+                {l === 'ro'
+                  ? 'Ai primit o confirmare pe email cu sumarul comenzii și chitanța Stripe.'
+                  : 'You have received an email confirmation with your order summary and Stripe receipt.'}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+              <Calendar size={18} color="var(--color-laurel)" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span>
+                {l === 'ro'
+                  ? 'Pregătim pachetul în zorii zilei pentru a păstra nutrienții și prospețimea intacte.'
+                  : 'We prepare your harvest box at dawn to preserve nutrients and crisp freshness.'}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+              <Truck size={18} color="var(--color-saffron)" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <span>
+                {l === 'ro'
+                  ? 'Curierul local dedicat te va contacta prin SMS / telefon înainte de livrare.'
+                  : 'Our dedicated local driver will contact you via SMS / phone prior to delivery.'}
+              </span>
+            </div>
+          </div>
         </motion.div>
 
+        {/* Actions */}
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/boutique" className="btn btn-primary">
-            <ShoppingBasket size={16} />
-            {l === 'ro' ? 'Continuă cumpărăturile' : 'Continue shopping'}
+          <Link href="/boutique" className="btn btn-primary btn-lg">
+            <ShoppingBag size={16} />
+            <span>{l === 'ro' ? 'Înapoi la Magazin' : 'Back to Shop'}</span>
           </Link>
-          <Link href="/" className="btn btn-secondary">
-            {l === 'ro' ? 'Înapoi acasă' : 'Back home'}
+          <Link href="/" className="btn btn-secondary btn-lg">
+            <span>{l === 'ro' ? 'Pagina Principală' : 'Return Home'}</span>
           </Link>
         </div>
       </div>
