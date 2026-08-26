@@ -7,26 +7,27 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 :root {
-  /* ── Color Palette (Tactile, earthy, high contrast) ── */
-  --color-bg: #FBF9F5;
-  --color-bg-subtle: #F3EFE6;
+  /* ── Color Palette (Neo-Retro D2C, Olive + Brick + Paper) ── */
+  --color-bg: #f4efdf; /* Warm paper */
+  --color-bg-subtle: #ebdxc7;
   --color-surface: #FFFFFF;
-  --color-surface-hover: #FAF7F0;
+  --color-surface-hover: #FBF9F5;
   
   /* Text & Ink */
-  --color-ink: #1C1917;
-  --color-ink-muted: #57534E;
-  --color-ink-faint: #8C867E;
-  --color-ink-inverse: #FBF9F5;
+  --color-ink: #18181b; /* Zinc 900, off-black */
+  --color-ink-muted: #3f3f46; /* Zinc 700 */
+  --color-ink-faint: #71717a; /* Zinc 500 */
+  --color-ink-inverse: #f4efdf;
 
-  /* Brand Accents */
-  --color-terracotta: #942E1F;
-  --color-terracotta-hover: #7A2417;
-  --color-terracotta-soft: rgba(148, 46, 31, 0.08);
-  --color-laurel: #2C4A34;
-  --color-laurel-soft: rgba(44, 74, 52, 0.09);
-  --color-saffron: #C28528;
-  --color-saffron-soft: rgba(194, 133, 40, 0.12);
+  /* Brand Accents (Graza-inspired Olive & Bright Brick) */
+  --color-terracotta: #d9381e; /* Bright Brick Red */
+  --color-terracotta-hover: #b82b13;
+  --color-terracotta-soft: rgba(217, 56, 30, 0.1);
+  --color-laurel: #4b6631; /* Vibrant Olive */
+  --color-laurel-hover: #3d5228;
+  --color-laurel-soft: rgba(75, 102, 49, 0.12);
+  --color-saffron: #f3ca20; /* Bright Yellow */
+  --color-saffron-soft: rgba(243, 202, 32, 0.2);
 
   /* Hairlines & Borders */
   --color-border: rgba(28, 25, 23, 0.08);
@@ -34,6 +35,7 @@
   --color-border-subtle: rgba(28, 25, 23, 0.04);
 
   /* ── Typography Roles ── */
+  --font-display: 'Bricolage Grotesque', var(--font-sans);
   --font-serif: 'Newsreader', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
@@ -45,14 +47,14 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
 
-  /* ── Elevation Shadows (Soft & Diffused, never harsh) ── */
-  --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.04), 0 1px 2px rgba(28, 25, 23, 0.02);
-  --shadow-md: 0 4px 16px -2px rgba(28, 25, 23, 0.06), 0 2px 6px -1px rgba(28, 25, 23, 0.03);
-  --shadow-lg: 0 12px 32px -4px rgba(28, 25, 23, 0.08), 0 4px 12px -2px rgba(28, 25, 23, 0.04);
-  --shadow-xl: 0 24px 48px -8px rgba(28, 25, 23, 0.12);
+  /* ── Elevation Shadows (Neo-Retro Hard Shadows) ── */
+  --shadow-sm: 2px 2px 0px 0px rgba(24, 24, 27, 1);
+  --shadow-md: 4px 4px 0px 0px rgba(24, 24, 27, 1);
+  --shadow-lg: 6px 6px 0px 0px rgba(24, 24, 27, 1);
+  --shadow-xl: 8px 8px 0px 0px rgba(24, 24, 27, 1);
 
-  /* ── Motion Curve (Exponential Decel) ── */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* ── Motion Curve (Bouncy) ── */
+  --ease-out-expo: cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy spring */
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --duration-slow: 400ms;
@@ -61,8 +63,6 @@
 /* ── Reset & Baseline ── */
 *, *::before, *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 html {
@@ -108,6 +108,11 @@ body {
 }
 
 /* ── Typography Classes ── */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 800; /* Bricolage looks great at 800 */
+}
+
 .font-serif {
   font-family: var(--font-serif);
 }
@@ -137,70 +142,67 @@ body {
 
 /* ── Component Primitives ── */
 
-/* Buttons */
+/* Buttons (Neo-Retro Tactile) */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-family: var(--font-sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0.75rem 1.5rem;
   border-radius: var(--radius-full);
-  border: 1px solid transparent;
+  border: 2px solid var(--color-ink);
   cursor: pointer;
   text-decoration: none;
-  transition: all var(--duration-base) var(--ease-out-expo);
+  transition: all 100ms ease;
   white-space: nowrap;
+  box-shadow: 4px 4px 0px 0px rgba(24, 24, 27, 1);
+}
+
+.btn:active {
+  transform: translate(4px, 4px) !important;
+  box-shadow: 0px 0px 0px 0px rgba(24, 24, 27, 1) !important;
 }
 
 .btn-primary {
   background-color: var(--color-terracotta);
   color: #FFFFFF;
-  border-color: var(--color-terracotta);
-  box-shadow: 0 1px 2px rgba(148, 46, 31, 0.2);
 }
 .btn-primary:hover {
   background-color: var(--color-terracotta-hover);
-  border-color: var(--color-terracotta-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(148, 46, 31, 0.25);
-}
-.btn-primary:active {
-  transform: translateY(0);
 }
 
 .btn-secondary {
-  background-color: var(--color-surface);
+  background-color: var(--color-saffron);
   color: var(--color-ink);
-  border-color: var(--color-border-strong);
 }
 .btn-secondary:hover {
-  background-color: var(--color-surface-hover);
-  border-color: var(--color-ink);
-  color: var(--color-ink);
+  background-color: #e3bc18;
 }
 
 .btn-dark {
   background-color: var(--color-ink);
   color: #FFFFFF;
-  border-color: var(--color-ink);
 }
 .btn-dark:hover {
-  background-color: #2E2A27;
-  border-color: #2E2A27;
-  transform: translateY(-1px);
+  background-color: #27272a;
 }
 
 .btn-ghost {
   background-color: transparent;
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
+  box-shadow: none;
+  border-color: transparent;
 }
 .btn-ghost:hover {
-  background-color: rgba(28, 25, 23, 0.05);
-  color: var(--color-ink);
+  background-color: rgba(24, 24, 27, 0.05);
+}
+.btn-ghost:active {
+  transform: none !important;
 }
 
 .btn-sm {
@@ -220,42 +222,39 @@ body {
   border-radius: var(--radius-full);
 }
 
-/* Badges / Tags */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  padding: 0.25rem 0.625rem;
+  padding: 0.35rem 0.75rem;
   border-radius: var(--radius-full);
   line-height: 1;
+  border: 1.5px solid var(--color-ink);
+  box-shadow: 2px 2px 0px 0px rgba(24, 24, 27, 1);
 }
 
 .badge-terracotta {
-  background-color: var(--color-terracotta-soft);
-  color: var(--color-terracotta);
-  border: 1px solid rgba(148, 46, 31, 0.15);
+  background-color: var(--color-terracotta);
+  color: #fff;
 }
 
 .badge-laurel {
-  background-color: var(--color-laurel-soft);
-  color: var(--color-laurel);
-  border: 1px solid rgba(44, 74, 52, 0.15);
+  background-color: var(--color-laurel);
+  color: #fff;
 }
 
 .badge-saffron {
-  background-color: var(--color-saffron-soft);
-  color: var(--color-saffron);
-  border: 1px solid rgba(194, 133, 40, 0.2);
+  background-color: var(--color-saffron);
+  color: var(--color-ink);
 }
 
 .badge-neutral {
-  background-color: rgba(28, 25, 23, 0.05);
-  color: var(--color-ink-muted);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
 }
 
 /* Inputs */
@@ -263,30 +262,32 @@ body {
   width: 100%;
   font-family: var(--font-sans);
   font-size: 0.9375rem;
-  padding: 0.625rem 1rem;
+  padding: 0.75rem 1.25rem;
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border-strong);
+  border: 2px solid var(--color-ink);
   border-radius: var(--radius-sm);
   color: var(--color-ink);
   outline: none;
-  transition: all var(--duration-fast) ease;
+  box-shadow: 3px 3px 0px 0px rgba(24, 24, 27, 1);
+  transition: all 100ms ease;
 }
 .input:focus {
-  border-color: var(--color-terracotta);
-  box-shadow: 0 0 0 3px var(--color-terracotta-soft);
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px 0px 0px rgba(24, 24, 27, 1);
 }
 
-/* Cards */
+/* Cards (Neo-Retro) */
 .card-craft {
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 2px solid var(--color-ink);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: all var(--duration-base) var(--ease-out-expo);
+  box-shadow: var(--shadow-md);
+  transition: all var(--duration-fast) ease;
 }
 .card-craft:hover {
-  border-color: var(--color-border-strong);
-  box-shadow: var(--shadow-md);
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Editorial Dividers */
